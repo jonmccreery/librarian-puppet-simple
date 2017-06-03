@@ -30,7 +30,7 @@ module Librarian
             unless File.exists?(module_dir)
               case
               when repo[:git]
-                install_git module_path, repo[:name], repo[:git], repo[:ref]
+                install_git module_path, repo[:name], repo[:git], @forced, repo[:ref]
               when repo[:tarball]
                 install_tarball module_path, repo[:name], repo[:tarball]
               else
@@ -45,15 +45,16 @@ module Librarian
         private
 
         # installs sources that are git repos
-        def install_git(module_path, module_name, repo, ref = nil)
+        def install_git(module_path, module_name, repo, force = nil, ref = nil)
           module_dir = File.join(module_path, module_name)
+          opt_force = '-f' if force
 
           Dir.chdir(module_path) do
             print_verbose "cloning #{repo}"
             system_cmd("git clone #{repo} #{module_name}")
             Dir.chdir(module_dir) do
               system_cmd('git branch -r')
-              system_cmd("git checkout #{ref}") if ref
+              system_cmd("git checkout #{opt_force} #{ref}") if ref
             end
           end
         end

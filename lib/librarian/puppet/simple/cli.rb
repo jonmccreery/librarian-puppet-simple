@@ -27,10 +27,12 @@ module Librarian
 
         desc 'install', 'installs all git sources from your Puppetfile'
         method_option :clean, :type => :boolean, :desc => "calls clean before executing install"
+        method_option :force, :type => :boolean, :desc => "overwrite modified files during installation"
         def install
           @verbose = options[:verbose]
           clean if options[:clean]
           @custom_module_path = options[:path]
+          @forced = options[:force]
           # evaluate the file to populate @modules
           eval(File.read(File.expand_path(options[:puppetfile])))
           install!
